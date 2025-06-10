@@ -175,6 +175,25 @@ select * from Customer;
 select * from AddressDetails;
 select * from Booking;
 select * from Payment;
+select * from Hotel;
 select * from Room;
 select * from RoomType;
 select * from PaymentMethod;
+
+---------------------------------------------------------------- create view or function---------------------------------------------------------------------------------
+
+--to see the rooms in particular hotel
+create function fnAvailableRooms(
+@HotelID int
+)
+returns table
+as 
+return (
+select r.Id as roomID , h.Name as HotelNAme, rt.RoomType , rt.Price
+from Hotel h 
+join Room r on h.ID = r.HotelID
+join RoomType rt on rt.ID = r.RoomTypeID
+where h.ID = @HotelID
+); 
+
+select * from fnAvailableRooms(1);
