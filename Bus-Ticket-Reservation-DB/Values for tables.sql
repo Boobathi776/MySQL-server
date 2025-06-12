@@ -463,3 +463,13 @@ insert into Payment (BookingID, CustomerID, MethodID, Amount, StatusID) values
 (19, 4, 5, 400.00, 2),
 (20, 5, 3, 800.00, 2);
 
+
+--for the user that don't book any tickes 
+insert into Customer values('Boobathi','8838615478',1,1);
+insert into Customer Values('Santhosh','8798655434',2,2);
+insert into Customer values('Durai','6379639261',3,3);
+
+-- for the bus that doesn't add to any routes
+insert into Bus values('RRS','TN49B1234',2,13,0,45,1),('LRS','TN48A8756',4,5,0,40,1);
+
+update Seat set SeatTypeID = null where ID in (5,6,7); 
