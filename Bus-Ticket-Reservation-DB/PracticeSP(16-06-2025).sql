@@ -92,3 +92,93 @@ EXEC spStoreBusRouteDetails
 PRINT @msg;
 
 
+--show all available seats in the particular date and in a particular bus 
+create or alter procedure spShowAvailableSeats
+@BusID int,
+@Date date
+as 
+begin 
+declare @BusRouteID int;
+select @BusRouteID = br.ID
+from BusRoute br 
+where br.BusID = @BusID and cast(DepartureDT as date) = @Date;
+
+select *
+from Seat s
+where s.BusID = @BusID
+and s.ID not in
+(
+select SeatID
+from BookedSeat  
+where @BusRouteID = RouteID);
+end
+
+spShowAvailableSeats 4,'2025-06-23'
+
+select Count(*) as [no of seats]
+from Seat s 
+where BusID = 4;
+
+--Update booking status after payment confirmation. {XXXXXXXX}
+
+--2. Input Parameters Practice
+--Create a procedure to return all available buses between two cities.
+create or alter procedure spShowAvailableBuses
+@FromCityID int,
+@ToCityID int
+as
+begin
+	if exists(select 1 from City where ID = @FromCityID)
+	and exists(select 1 from City where ID = @ToCityID)
+    begin
+		declare @DistanceID int;
+		select @DistanceID = d.ID
+		from Distance d 
+		where d.FromCityID=@FromCityID and d.ToCityID = @ToCityID;
+
+		select c1.Name as [From] ,c2.Name as [TO],d.Distance , br.ID as [Bus Route ID]
+		from BusRoute br
+		join Distance d on d.ID = br.DistanceID
+		join city c1 on c1.ID = @FromCityID
+		join city c2 on c2.ID = @ToCityID
+		where d.FromCityID = @FromCityID and d.ToCityID = @ToCityID;
+
+	end
+end
+
+select * from City
+declare @fromcity int,@tocity int
+select @tocity = id from city where name = 'Madurai';
+select @fromcity = id from city where name = 'chennai';
+print @fromcity
+--delete city where id = 21
+exec spShowAvailableBuses @fromcity,@tocity;
+
+--Get the list of bookings for a specific customer using their name or mobile.
+select * from booking;
+
+create procedure spBookingByCustomer
+@CustomerNameOrMobileNumber varchar(max)
+as 
+begin
+	declare @CustomerID int;
+
+	if exists ( select 1 from customer where MobileNo=@CustomerNameOrMobileNumber)
+		select @CustomerID = Id from Customer where MobileNo = @CustomerNameOrMobileNumber
+	else if exists(select 1 from Customer where Name = @CustomerNameOrMobileNumber)
+	begin 
+	select @CustomerID = Id from Customer where MobileNo = @CustomerNameOrMobileNumber
+	end
+	else  
+		print 'There is no customer with this mobile number as well with name'
+	select * from Booking where CustomerID = @CustomerID;
+end
+
+spBookingByCustomer '9876543210';
+
+spBookingByCustomer '9123456789';
+spBookingByCustomer '9821345698';
+spBookingByCustomer 'Arun Nair';
+spBookingByCustomer 'Priya Singh';
+spBookingByCustomer 'Ravi Kumar';
+select * from Customer;
