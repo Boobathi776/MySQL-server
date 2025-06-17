@@ -1,0 +1,59 @@
+🔥 Trigger Practice Questions (Based on your InventoryDB)
+🔁 1. Auto-update stock on order
+❓ When a new row is inserted into OrderDetails, reduce the item’s stock in Inventory.
+
+📌 Challenge: Prevent stock going negative.
+
+🧮 2. Recalculate total amount
+❓ When OrderDetails is inserted, updated, or deleted, automatically update TotalAmount in Orders.
+
+📌 Hint: Use AFTER INSERT, UPDATE, DELETE.
+
+📝 3. Stock change log
+❓ Every time stock changes (due to order or return), insert a record into StockLog.
+
+📌 Columns: ItemID, QuantityChanged, ChangeType (e.g., Sale, Return), ReferenceID, ChangedBy.
+
+❌ 4. Block blacklisted customer from ordering
+❓ If a blacklisted customer tries to place an order, prevent it using an INSTEAD OF INSERT trigger on Orders.
+
+🔄 5. Trigger restock alert
+❓ If inserting an OrderDetails reduces stock below ReOrderLevel, auto-insert a record into RestockRequests (only if not already pending).
+
+📊 6. Track price updates
+❓ When Inventory.Price is updated, log the old and new value in ItemAudit.
+
+📌 Columns: ChangeType = 'Price Update', OldValue, NewValue, ChangedBy.
+
+🧼 7. Return stock adjustment
+❓ When a return is processed in the Returns table, increase stock of that item.
+
+Also, log it in StockLog with ChangeType = 'Return'.
+
+👀 8. Flag fraudulent behavior
+❓ If a customer returns more than 3 items in the last 7 days, insert a record in FraudAlerts.
+
+📌 Trigger on Returns.
+
+🚫 9. Prevent excessive discounting
+❓ If any OrderDetails.Price is more than 30% lower than the current price of that item in Inventory, reject the insert.
+
+📌 10. Audit quantity changes
+❓ If the Inventory.Stock is manually updated (via update query), log both old and new values into ItemAudit.
+
+⚙️ Bonus Ideas for Triggers
+Scenario	Trigger Target
+Cancel an order → Restock inventory	DELETE ON Orders
+Detect tampering → Price suddenly drops too much	UPDATE ON Inventory
+RestockRequest status change to “Approved” → Increase inventory	UPDATE ON RestockRequests
+
+Would you like sample code for any one of these first?
+
+
+
+
+
+
+
+
+
