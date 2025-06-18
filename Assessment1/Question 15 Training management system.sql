@@ -177,10 +177,10 @@ exec spStoreAttendance 1,1; -- this will show error
 --3. create a view that shows each trainees attendace rate as percentage
 create or alter view vsShowpercentage
 as 
-select t.ID,((count(a.sessionID)/(select count(id) from session))*100) as attendanceCount
+select t.ID,((count(a.sessionID)/(select count(id) from session))*100) as AttendancePercentage
 from Attendance a 
 join Trainees t on t.ID = a.TraineesID
-group by t.ID
+group by t.ID;
 
 select * from vsShowpercentage;
 
@@ -201,9 +201,10 @@ as
 begin
 	if exists(select 1 from inserted )
 	begin
-		select * 
+		select i.TraineesID 
 		from vsShowpercentage as sp
 		join inserted i on i.TraineesID = sp.ID
+		where sp.AttendancePercentage < 70;
 	end 
 end
 
