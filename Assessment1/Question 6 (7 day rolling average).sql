@@ -16,5 +16,5 @@ insert into Sales (ProductID, SalesDate, Amount) values(1, '2025-06-01', 100.00)
 
 select * from Sales;
  
-select ProductID,avg(Amount) over(partition by productID order by SalesDate rows between 6 preceding and current row) as AverageAmountOf7Days
+select ProductID,avg(Amount) over(partition by productID order by SalesDate rows between 6 preceding  and  current row) as AverageAmountOf7Days
 from Sales;
