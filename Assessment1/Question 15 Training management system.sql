@@ -117,7 +117,7 @@ insert into City(Name, StateID) values ('Chennai', 1),('Coimbatore', 1),('Trichy
 select * from City;
 insert into Pincode(PinNumber, CityID) values ('600064', 1),('641001', 2),('620003', 3);
 select * from pincode;
-insert into Address(PinCode,address) values(7,'Subahaniyapuram,woraiyur'),(5,'sundharesan coloney,Tamabaram'),(6,'natarajan street,tamabaram sanatorium');
+insert into Address(PinCode,address) values(3,'Subahaniyapuram,woraiyur'),(2,'sundharesan coloney,Tamabaram'),(3,'natarajan street,tamabaram sanatorium');
 insert into Session(Name, Duration) values ('SQL server', 2.5),('Joins', 3.0),('C# ', 4.0),('ASP.NET Core', 3.5);
 select * from Trainees,Trainers;
 select * from Address;
@@ -152,37 +152,38 @@ end;
 
 select * from Session;
 select * from Trainees;
-
-exec spStoreAttendance 1,1;
-exec spStoreAttendance 1,2;
+select * from Attendance;
 exec spStoreAttendance 1,3;
 exec spStoreAttendance 1,4;
+exec spStoreAttendance 1,5;
 exec spStoreAttendance 1,6;
-exec spStoreAttendance 2,1;
-exec spStoreAttendance 2,2;
+exec spStoreAttendance 1,7;
+exec spStoreAttendance 1,8;
 exec spStoreAttendance 2,3;
 exec spStoreAttendance 2,4;
-exec spStoreAttendance 2,5;
 exec spStoreAttendance 2,6;
-exec spStoreAttendance 3,1;
-exec spStoreAttendance 3,2;
+exec spStoreAttendance 3,3;
 exec spStoreAttendance 3,4;
-exec spStoreAttendance 3,6;
-exec spStoreAttendance 4,1;
+exec spStoreAttendance 3,8;
 exec spStoreAttendance 4,3;
-exec spStoreAttendance 4,6;
+exec spStoreAttendance 4,5;
+exec spStoreAttendance 4,8;
+exec spStoreAttendance 4,4;
+exec spStoreAttendance 4,7;
+
+
 
 exec spStoreAttendance 1,1; -- this will show error
 
 --3. create a view that shows each trainees attendace rate as percentage
 create or alter view vsShowpercentage
 as 
-select t.ID,((count(a.sessionID)/(select count(id) from session))*100) as AttendancePercentage
+select t.ID,count(a.sessionID) as AttentCount,((count(a.sessionID)*100)/(select count(id) from session)) as AttendancePercentage
 from Attendance a 
 join Trainees t on t.ID = a.TraineesID
 group by t.ID;
 
-select * from vsShowpercentage;
+--select * from vsShowpercentage;
 
 --4. Create a trigger that inserts a warning into a warning table if a trainee's attendact drop below 70%
 
@@ -201,6 +202,7 @@ as
 begin
 	if exists(select 1 from inserted )
 	begin
+	insert into warning(TraineeID)
 		select i.TraineesID 
 		from vsShowpercentage as sp
 		join inserted i on i.TraineesID = sp.ID
@@ -208,6 +210,9 @@ begin
 	end 
 end
 
+select * from Warning;
+
+ 
 
 
 
