@@ -2,6 +2,7 @@
 create database Question15;
 use  Question15;
 
+--1. design a schema with all necessary keys and constraints
 if object_id('State') is null
 begin
 	create table State(
@@ -117,7 +118,7 @@ insert into City(Name, StateID) values ('Chennai', 1),('Coimbatore', 1),('Trichy
 select * from City;
 insert into Pincode(PinNumber, CityID) values ('600064', 1),('641001', 2),('620003', 3);
 select * from pincode;
-insert into Address(PinCode,address) values(3,'Subahaniyapuram,woraiyur'),(2,'sundharesan coloney,Tamabaram'),(3,'natarajan street,tamabaram sanatorium');
+insert into Address(PinCode,address) values(7,'Subahaniyapuram,woraiyur'),(5,'sundharesan coloney,Tamabaram'),(6,'natarajan street,tamabaram sanatorium');
 insert into Session(Name, Duration) values ('SQL server', 2.5),('Joins', 3.0),('C# ', 4.0),('ASP.NET Core', 3.5);
 select * from Trainees,Trainers;
 select * from Address;
@@ -133,6 +134,7 @@ insert into Trainers values('Ebenezer','Ebenezer@gmail.com','8765986532',4),
 ('Arthi','Arthi@gmail.com','8765986532',3),
 ('Abdul','Abdul@gmail.com','8765986532',2);
 
+--2. write a procedure to add trainees attendance
 create or alter procedure spStoreAttendance
 (
 @SessionID int,
@@ -152,38 +154,39 @@ end;
 
 select * from Session;
 select * from Trainees;
-select * from Attendance;
+
+exec spStoreAttendance 1,1;
+exec spStoreAttendance 1,2;
 exec spStoreAttendance 1,3;
 exec spStoreAttendance 1,4;
-exec spStoreAttendance 1,5;
 exec spStoreAttendance 1,6;
-exec spStoreAttendance 1,7;
-exec spStoreAttendance 1,8;
+exec spStoreAttendance 2,1;
+exec spStoreAttendance 2,2;
 exec spStoreAttendance 2,3;
 exec spStoreAttendance 2,4;
+exec spStoreAttendance 2,5;
 exec spStoreAttendance 2,6;
-exec spStoreAttendance 3,3;
+exec spStoreAttendance 3,1;
+exec spStoreAttendance 3,2;
 exec spStoreAttendance 3,4;
-exec spStoreAttendance 3,8;
+exec spStoreAttendance 3,6;
+exec spStoreAttendance 4,1;
 exec spStoreAttendance 4,3;
+exec spStoreAttendance 4,6;
 exec spStoreAttendance 4,5;
-exec spStoreAttendance 4,8;
-exec spStoreAttendance 4,4;
-exec spStoreAttendance 4,7;
-
-
 
 exec spStoreAttendance 1,1; -- this will show error
 
 --3. create a view that shows each trainees attendace rate as percentage
 create or alter view vsShowpercentage
 as 
-select t.ID,count(a.sessionID) as AttentCount,((count(a.sessionID)*100)/(select count(id) from session)) as AttendancePercentage
+select t.ID,t.Name,(count(a.sessionID)*100)/(select count(id) from session) as AttendancePercentage
 from Attendance a 
 join Trainees t on t.ID = a.TraineesID
-group by t.ID;
+where a.Status=1
+group by t.ID,t.Name;
 
---select * from vsShowpercentage;
+select * from vsShowpercentage;
 
 --4. Create a trigger that inserts a warning into a warning table if a trainee's attendact drop below 70%
 
@@ -202,19 +205,19 @@ as
 begin
 	if exists(select 1 from inserted )
 	begin
-	insert into warning(TraineeID)
+		insert into Warning(TraineeID)
 		select i.TraineesID 
-		from vsShowpercentage as sp
-		join inserted i on i.TraineesID = sp.ID
-		where sp.AttendancePercentage < 70;
+		from vsShowpercentage as vsp
+		join inserted i on i.TraineesID = vsp.ID
+		where vsp.AttendancePercentage < 70;
 	end 
 end
 
-select * from Warning;
+select * from warning;
 
- 
-
-
+select t.Name,w.ATTime
+from warning w
+join Trainees t on t.ID = w.TraineeID
 
 
 
