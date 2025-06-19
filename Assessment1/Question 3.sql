@@ -20,19 +20,26 @@ group by CustomerID
 having count(OrderDate) = 6;
 
 
---Correct solution 
+--Correct solution 1
 with CustomerOrderedMonths as(
-select CustomerID ,month(OrderDate) as MonthsOrdered,count(OrderDate) as [no of orders]
+select CustomerID ,format(OrderDate,'yyyyMM') as MonthsOrdered,count(OrderDate) as [no of orders]
 from Orders
 where OrderDate between dateAdd(month,-6,getdate()) and cast(getdate() as date)
-group by month(orderDate),CustomerID
+group by format(orderDate,'yyyyMM'),CustomerID
 )
 select CustomerID
 from CustomerOrderedMonths cm 
 group by CustomerID 
-having count(MonthsOrdered) = 6
-
+having count(MonthsOrdered) >= 6
 
 select * from Orders;
+
+
+-- solution 2
+select CustomerID
+from Orders 
+where datediff(month,Orderdate,getdate())<6
+group by CustomerID 
+having count(distinct month(Orderdate))>=6;
 
 
